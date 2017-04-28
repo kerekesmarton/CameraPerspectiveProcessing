@@ -16,8 +16,6 @@
 
 /* Begin PBXFileReference section */
 		3C707C45CF7120931A028672 /* Pods_Camera.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Camera.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		8B1868F6BF2FD4514E6C509D /* Pods-Camera.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Camera.release.xcconfig"; path = "Pods/Target Support Files/Pods-Camera/Pods-Camera.release.xcconfig"; sourceTree = "<group>"; };
-		E01C75230E25862B489D2E2E /* Pods-Camera.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Camera.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Camera/Pods-Camera.debug.xcconfig"; sourceTree = "<group>"; };
 		FBD1C6AE1EB094830098D480 /* Camera.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Camera.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FBD1C6B11EB094830098D480 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FBD1C6B31EB094830098D480 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -46,21 +44,11 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		BC3BFE9FCD02E256F443C46B /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				E01C75230E25862B489D2E2E /* Pods-Camera.debug.xcconfig */,
-				8B1868F6BF2FD4514E6C509D /* Pods-Camera.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 		FBD1C6A51EB094830098D480 = {
 			isa = PBXGroup;
 			children = (
 				FBD1C6B01EB094830098D480 /* Camera */,
 				FBD1C6AF1EB094830098D480 /* Products */,
-				BC3BFE9FCD02E256F443C46B /* Pods */,
 				1C76B89BF78DBF316EE7128E /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -281,7 +269,6 @@
 		};
 		FBD1C6C11EB094830098D480 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E01C75230E25862B489D2E2E /* Pods-Camera.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 5XXZC7Y2X5;
@@ -295,7 +282,6 @@
 		};
 		FBD1C6C21EB094830098D480 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8B1868F6BF2FD4514E6C509D /* Pods-Camera.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 5XXZC7Y2X5;

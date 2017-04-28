@@ -46,14 +46,14 @@ class ViewController: UIViewController {
     }
 
     func prepare(_ inputImage: UIImage) {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Draw", style: .done, target: self, action: #selector(drawFullSize))
         image = CIImage(image: inputImage.normalizedImage())
         let ciContext =  CIContext()
         let detector = CIDetector(ofType: CIDetectorTypeRectangle, context: ciContext, options: [CIDetectorAccuracy: CIDetectorAccuracyHigh])
         guard let ciImage = image, let rect = detector?.features(in: ciImage).first as? CIRectangleFeature else {
-            showError(with: "Couldn't get region")
+            drawSimpleOverlay(on: image!)
             return
         }
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Draw", style: .done, target: self, action: #selector(drawFullSize))
         drawPerspective(with: rect, on: ciImage)
     }
 
@@ -64,32 +64,50 @@ class ViewController: UIViewController {
     }
 
     func drawSimpleOverlay(on image: CIImage) {
-        let overlay = CIImage(image: UIImage(color: UIColor.yellow)!)
-        let rect = image.extent.insetBy(dx: 25, dy: 25)
-        let perspectiveTransform = CIFilter(name: "CIPerspectiveTransform")!
-        perspectiveTransform.setValue(CIVector(cgPoint:CGPoint(x: rect.minX, y: rect.minY)), forKey: "inputTopLeft")
-        perspectiveTransform.setValue(CIVector(cgPoint:CGPoint(x: rect.maxX, y: rect.minY)), forKey: "inputTopRight")
-        perspectiveTransform.setValue(CIVector(cgPoint:CGPoint(x: rect.maxX, y: rect.maxY)), forKey: "inputBottomRight")
-        perspectiveTransform.setValue(CIVector(cgPoint:CGPoint(x: rect.minX, y: rect.maxY)), forKey: "inputBottomLeft")
-        perspectiveTransform.setValue(overlay, forKey: kCIInputImageKey)
+        let rect = image.extent.insetBy(dx: 250, dy: 250)
+        let overlayImage = UIImage(color: UIColor.red.withAlphaComponent(0.3), size: rect.size)!
+        let overlay = CIImage(image: overlayImage)
+        perspectiveTransform = CIFilter(name: "CIPerspectiveTransform")!
 
-        let composite = CIFilter(name: "CISourceAtopCompositing")!
-        composite.setValue(image, forKey: kCIInputBackgroundImageKey)
-        composite.setValue(perspectiveTransform.outputImage!, forKey: kCIInputImageKey)
+        let topLeftPoint = CGPoint(x: rect.minX, y: rect.minY)
+        topLeftVector = CIVector(cgPoint:topLeftPoint)
+        perspectiveTransform?.setValue(topLeftVector!, forKey: "inputTopLeft")
+        topLeftDragButton = addDraggableButton(at: topLeftPoint, from: image.extent, to: imageView.frame)
+        imageView.addSubview(topLeftDragButton!)
 
-        imageView.image = UIImage(ciImage: composite.outputImage!)
+        let topRightPoint = CGPoint(x: rect.maxX, y: rect.minY)
+        topRightVector = CIVector(cgPoint:topRightPoint)
+        perspectiveTransform?.setValue(topRightVector!, forKey: "inputTopRight")
+        topRightDragButton = addDraggableButton(at: topRightPoint, from: image.extent, to: imageView.frame)
+        imageView.addSubview(topRightDragButton!)
+
+        let bottomRightPoint = CGPoint(x: rect.maxX, y: rect.maxY)
+        bottomRightVector = CIVector(cgPoint:CGPoint(x: rect.maxX, y: rect.maxY))
+        perspectiveTransform?.setValue(bottomRightVector!, forKey: "inputBottomRight")
+        bottomRightDragButton = addDraggableButton(at: bottomRightPoint, from: image.extent, to: imageView.frame)
+        imageView.addSubview(bottomRightDragButton!)
+
+        let bottomLeftPoint = CGPoint(x: rect.minX, y: rect.maxY)
+        bottomLeftVector = CIVector(cgPoint:bottomLeftPoint)
+        perspectiveTransform?.setValue(bottomLeftVector!, forKey: "inputBottomLeft")
+        bottomLeftDragButton = addDraggableButton(at: bottomLeftPoint, from: image.extent, to: imageView.frame)
+        imageView.addSubview(bottomLeftDragButton!)
+
+        perspectiveTransform?.setValue(overlay, forKey: kCIInputImageKey)
+        
+        render()
     }
 
     func drawFullSize() {
         imageView.subviews.forEach { $0.removeFromSuperview() }
-        let finalTransform = CIFilter(name: "CIPerspectiveCorrection")!
-        finalTransform.setValue(topLeftVector!, forKey: "inputTopLeft")
-        finalTransform.setValue(topRightVector!, forKey: "inputTopRight")
-        finalTransform.setValue(bottomRightVector!, forKey: "inputBottomRight")
-        finalTransform.setValue(bottomLeftVector!, forKey: "inputBottomLeft")
-        finalTransform.setValue(image, forKey: kCIInputImageKey)
+        let perspectiveCorrection = CIFilter(name: "CIPerspectiveCorrection")!
+        perspectiveCorrection.setValue(topLeftVector!, forKey: "inputTopLeft")
+        perspectiveCorrection.setValue(topRightVector!, forKey: "inputTopRight")
+        perspectiveCorrection.setValue(bottomRightVector!, forKey: "inputBottomRight")
+        perspectiveCorrection.setValue(bottomLeftVector!, forKey: "inputBottomLeft")
+        perspectiveCorrection.setValue(image, forKey: kCIInputImageKey)
 
-        guard let crop = finalTransform.outputImage else {
+        guard let crop = perspectiveCorrection.outputImage else {
             showError(with: "Couldn't crop")
             return
         }
@@ -146,7 +164,7 @@ class ViewController: UIViewController {
     }
 
     func addDraggableButton(at point: CGPoint, from ciImageRect: CGRect, to imageViewRect: CGRect) -> UIView? {
-        let normalizedPoint = normalizePoint(point, from: ciImageRect, to: imageViewRect)
+        let normalizedPoint = normalize(point, from: ciImageRect, to: imageViewRect)
         guard let image = UIImage(color: UIColor.blue.withAlphaComponent(0.5), size: CGSize(width: 40, height: 40)) else {
             return nil
         }
@@ -158,7 +176,7 @@ class ViewController: UIViewController {
         return dragView
     }
 
-    func normalizePoint(_ point: CGPoint, from ciImageRect: CGRect, to imageViewRect: CGRect) -> CGPoint {
+    func normalize(_ point: CGPoint, from ciImageRect: CGRect, to imageViewRect: CGRect) -> CGPoint {
         let xFactor = imageViewRect.width / ciImageRect.width
         let yFactor = imageViewRect.height / ciImageRect.height
         let transform = CGAffineTransform(scaleX: xFactor, y: yFactor);
@@ -166,7 +184,7 @@ class ViewController: UIViewController {
         return CGPoint(x: transformedPoint.x, y: imageViewRect.height - transformedPoint.y)
     }
 
-    func coreImagePoint(_ point: CGPoint, from imageViewRect: CGRect, to ciImageRect: CGRect) -> CGPoint {
+    func coreImage(_ point: CGPoint, from imageViewRect: CGRect, to ciImageRect: CGRect) -> CGPoint {
         let xFactor = ciImageRect.width / imageViewRect.width
         let yFactor = ciImageRect.height / imageViewRect.height
         let transform = CGAffineTransform(scaleX: xFactor, y: yFactor);
@@ -182,7 +200,7 @@ class ViewController: UIViewController {
             guard let ciImage = image else {
                 return
             }
-            let ciPoint = coreImagePoint(point, from: imageView.frame, to: ciImage.extent)
+            let ciPoint = coreImage(point, from: imageView.frame, to: ciImage.extent)
             if draggedView == topLeftDragButton {
                 topLeftVector = CIVector(cgPoint: ciPoint)
                 perspectiveTransform?.setValue(topLeftVector!, forKey: "inputTopLeft")
