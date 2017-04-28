@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="vIM-ra-AiV">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="V34-lF-uqs">
+            <objects>
+                <navigationController id="vIM-ra-AiV" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="M34-Lv-lWK">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="PXV-67-8Es" kind="relationship" relationship="rootViewController" id="9UE-lu-UsF"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="IFn-6r-bUd" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-170" y="131"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="rwx-MX-TiO">
+            <objects>
+                <viewController id="PXV-67-8Es" customClass="ViewController" customModule="Camera" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="fDd-4Q-6cE"/>
+                        <viewControllerLayoutGuide type="bottom" id="OxA-Xd-HU0"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="QGV-e0-uKJ">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="EeU-bA-htE">
+                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="EeU-bA-htE" firstAttribute="top" secondItem="fDd-4Q-6cE" secondAttribute="bottom" id="32Y-hH-hAu"/>
+                            <constraint firstItem="OxA-Xd-HU0" firstAttribute="top" secondItem="EeU-bA-htE" secondAttribute="bottom" id="5Tk-PO-NNK"/>
+                            <constraint firstAttribute="trailing" secondItem="EeU-bA-htE" secondAttribute="trailing" id="5ff-7l-R06"/>
+                            <constraint firstItem="EeU-bA-htE" firstAttribute="leading" secondItem="QGV-e0-uKJ" secondAttribute="leading" id="vqS-74-dEZ"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="peh-2L-wML">
+                        <barButtonItem key="rightBarButtonItem" systemItem="camera" id="BAY-zV-SF9">
+                            <connections>
+                                <action selector="presentImagePicker:" destination="PXV-67-8Es" id="gSX-MP-QPo"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <connections>
+                        <outlet property="imageView" destination="EeU-bA-htE" id="2hd-HX-T8K"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="MlM-O8-4BK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="599" y="131"/>
+        </scene>
+    </scenes>
+</document>
