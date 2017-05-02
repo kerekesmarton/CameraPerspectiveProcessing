@@ -57,6 +57,24 @@ class ViewController: UIViewController {
         drawPerspective(with: rect, on: ciImage)
     }
 
+    func drawFullSize() {
+        imageView.subviews.forEach { $0.removeFromSuperview() }
+        let perspectiveCorrection = CIFilter(name: "CIPerspectiveCorrection")!
+        perspectiveCorrection.setValue(topLeftVector!, forKey: "inputTopLeft")
+        perspectiveCorrection.setValue(topRightVector!, forKey: "inputTopRight")
+        perspectiveCorrection.setValue(bottomRightVector!, forKey: "inputBottomRight")
+        perspectiveCorrection.setValue(bottomLeftVector!, forKey: "inputBottomLeft")
+        perspectiveCorrection.setValue(image, forKey: kCIInputImageKey)
+
+        guard let crop = perspectiveCorrection.outputImage else {
+            showError(with: "Couldn't crop")
+            return
+        }
+
+        imageView.image = UIImage(ciImage: crop)
+        self.navigationItem.leftBarButtonItem = nil
+    }
+
     func showError(with message: String) {
         let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
@@ -96,24 +114,6 @@ class ViewController: UIViewController {
         perspectiveTransform?.setValue(overlay, forKey: kCIInputImageKey)
         
         render()
-    }
-
-    func drawFullSize() {
-        imageView.subviews.forEach { $0.removeFromSuperview() }
-        let perspectiveCorrection = CIFilter(name: "CIPerspectiveCorrection")!
-        perspectiveCorrection.setValue(topLeftVector!, forKey: "inputTopLeft")
-        perspectiveCorrection.setValue(topRightVector!, forKey: "inputTopRight")
-        perspectiveCorrection.setValue(bottomRightVector!, forKey: "inputBottomRight")
-        perspectiveCorrection.setValue(bottomLeftVector!, forKey: "inputBottomLeft")
-        perspectiveCorrection.setValue(image, forKey: kCIInputImageKey)
-
-        guard let crop = perspectiveCorrection.outputImage else {
-            showError(with: "Couldn't crop")
-            return
-        }
-
-        imageView.image = UIImage(ciImage: crop)
-        self.navigationItem.leftBarButtonItem = nil
     }
 
     func drawPerspective(with rect: CIRectangleFeature, on image: CIImage) {
